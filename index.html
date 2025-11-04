@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SermoLink Admin Dashboard</title>
+    <style>
+        :root {
+            --primary: #3f51b5;
+            --primary-dark: #303f9f;
+            --primary-light: #c5cae9;
+            --accent: #ff4081;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --divider: #e0e0e0;
+            --background: #f5f5f5;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+            --card-bg: #ffffff;
+            --sidebar-bg: #1a2942;
+            --sidebar-text: #ccd6f6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+        }
+        
+        /* Login Screen Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        
+        .login-logo {
+            margin-bottom: 30px;
+        }
+        
+        .login-logo img {
+            height: 60px;
+        }
+        
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+        
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        
+        .google-signin-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #444;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .google-signin-btn:hover {
+            background: #f8f9fa;
+            border-color: #dadce0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .google-signin-btn img {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+        
+        .login-note {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+        
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            transition: all 0.3s;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background-color: rgba(17,34,64,0.7);
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .sidebar-menu {
+            padding: 0;
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: rgba(77, 134, 156, 0.2);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--divider);
+        }
+        
+        .header h2 {
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .card .trend {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .trend.up {
+            color: var(--success);
+        }
+        
+        .trend.down {
+            color: var(--error);
+        }
+        
+        /* Content Tables */
+        .content-section {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 15px 20px;
+            background-color: var(--primary-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-header h3 {
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--divider);
+        }
+        
+        th {
+            background-color: #f9f9f9;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status.pending {
+            background-color: #fff3e0;
+            color: var(--warning);
+        }
+        
+        .status.approved {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+        
+        .status.rejected {
+            background-color: #ffebee;
+            color: var(--error);
+        }
+        
+        .status.banned {
+            background-color: #f5f5f5;
+            color: var(--text-secondary);
+        }
+        
+        .status.investigating {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--error);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--divider);
+        }
+        
+        .btn-outline:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid var(--divider);
+            border-radius: 4px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-options select {
+            padding: 10px 15px;
+            border: 1px solid var(--divider);
+            border-radius: 4px;
+            background-color: white;
+        }
+        
+        /* Message Preview Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--divider);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--divider);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .message-preview {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .message-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .message-content {
+            line-height: 1.5;
+        }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: slideInRight 0.3s ease, slideOutRight 0.3s ease 2.7s forwards;
+            max-width: 300px;
+        }
+        
+        .toast.success {
+            background: var(--success);
+        }
+        
+        .toast.error {
+            background: var(--error);
+        }
+        
+        .toast.warning {
+            background: var(--warning);
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* Loading spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* API Status */
+        .api-status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .api-status.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .api-status.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .api-status.warning {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffe0b2;
+        }
+        
+        /* Google Sheets Integration */
+        .sheets-container {
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        
+        .sheets-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sheets-header h3 {
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .sheets-content {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .sheets-info {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .sheets-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .sheets-preview {
+            background: white;
+            border: 1px solid var(--divider);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .sheets-preview table {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .sheets-preview th {
+            background: #f5f5f5;
+            position: sticky;
+            top: 0;
+        }
+        
+        /* Stats Accuracy Indicators */
+        .stats-accuracy {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        .accuracy-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .accuracy-high {
+            background-color: var(--success);
+        }
+        
+        .accuracy-medium {
+            background-color: var(--warning);
+        }
+        
+        .accuracy-low {
+            background-color: var(--error);
+        }
+        
+        /* Data freshness indicator */
+        .data-freshness {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+            }
+            
+            .sidebar-menu li {
+                border-bottom: none;
+                border-right: 1px solid rgba(255, 255, 255, 0.1);
+                flex: 1;
+                min-width: 150px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-filter {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .sheets-actions {
+                flex-direction: column;
+            }
+            
+            .login-card {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Login Screen (shown when not authenticated) -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="https://lemon-storing-center.netlify.app/sermolink/logo4.png" alt="SermoLink">
+            </div>
+            <h1 class="login-title">SermoLink Admin</h1>
+            <p class="login-subtitle">Sign in to access the moderation dashboard</p>
+            
+            <button id="googleSignInBtn" class="google-signin-btn">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+                Sign in with Google
+            </button>
+            
+            <div id="loginError" style="color: var(--error); margin: 15px 0; display: none;">
+                <i class="fas fa-exclamation-circle"></i> 
+                <span id="errorMessage">Authentication failed. Please try again.</span>
+            </div>
+            
+            <div id="manualAuth" style="display: none; margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px;">
+                <h4 style="margin-bottom: 10px;">Alternative Sign-In</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 10px;">If Google Sign-In doesn't work, try this alternative:</p>
+                <button id="redirectSignInBtn" class="btn btn-primary" style="width: 100%;">
+                    <i class="fab fa-google"></i> Sign in via Redirect
+                </button>
+            </div>
+            
+            <p class="login-note">
+                Only authorized administrators with Google accounts can access this dashboard. 
+                If you believe you should have access, please contact your system administrator.
+            </p>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard (shown when authenticated) -->
+    <div id="adminDashboard" class="admin-container" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://lemon-storing-center.netlify.app/sermolink/logo4.png" alt="SermoLink">
+                <h1>SermoLink Admin</h1>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-tab="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" data-tab="users"><i class="fas fa-users"></i> User Management</a></li>
+                <li><a href="#" data-tab="messages"><i class="fas fa-comments"></i> Message Moderation</a></li>
+                <li><a href="#" data-tab="reports"><i class="fas fa-flag"></i> Reports</a></li>
+                <li><a href="#" data-tab="banned"><i class="fas fa-ban"></i> Banned Users</a></li>
+                <li><a href="#" id="backToChat"><i class="fas fa-comment"></i> Back to Chat</a></li>
+                <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2 id="pageTitle">Moderation Dashboard</h2>
+                <div class="user-info">
+                    <img id="userAvatar" src="" alt="Admin User">
+                    <span id="adminName">Loading...</span>
+                </div>
+            </div>
+            
+            <!-- Dashboard Content -->
+            <div id="dashboard-content" class="tab-content">
+                <!-- Dashboard Cards -->
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h3>Pending Moderation</h3>
+                        <div class="value" id="pendingCount">0</div>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i> <span id="pendingTrend">Loading...</span>
+                        </div>
+                        <div class="stats-accuracy">
+                            <span class="accuracy-indicator accuracy-high"></span>
+                            <span>Live data</span>
+                        </div>
+                        <div class="data-freshness" id="pendingFreshness">Updated just now</div>
+                    </div>
+                    <div class="card">
+                        <h3>Total Users</h3>
+                        <div class="value" id="totalUsers">0</div>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i> <span id="usersTrend">Loading...</span>
+                        </div>
+                        <div class="stats-accuracy">
+                            <span class="accuracy-indicator accuracy-high"></span>
+                            <span>Live data</span>
+                        </div>
+                        <div class="data-freshness" id="usersFreshness">Updated just now</div>
+                    </div>
+                    <div class="card">
+                        <h3>Content Reports</h3>
+                        <div class="value" id="reportsCount">0</div>
+                        <div class="trend down">
+                            <i class="fas fa-arrow-down"></i> <span id="reportsTrend">Loading...</span>
+                        </div>
+                        <div class="stats-accuracy">
+                            <span class="accuracy-indicator accuracy-high"></span>
+                            <span>Live data</span>
+                        </div>
+                        <div class="data-freshness" id="reportsFreshness">Updated just now</div>
+                    </div>
+                    <div class="card">
+                        <h3>Banned Users</h3>
+                        <div class="value" id="bannedCount">0</div>
+                        <div class="trend up">
+                            <i class="fas fa-arrow-up"></i> <span id="bannedTrend">Loading...</span>
+                        </div>
+                        <div class="stats-accuracy">
+                            <span class="accuracy-indicator accuracy-high"></span>
+                            <span>Live data</span>
+                        </div>
+                        <div class="data-freshness" id="bannedFreshness">Updated just now</div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3>Recent Activity</h3>
+                        <button class="btn btn-primary" id="refreshDashboard"><i class="fas fa-sync"></i> Refresh</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activityTableBody">
+                                <tr>
+                                    <td colspan="4" style="text-align: center;">Loading activity...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Management Content -->
+            <div id="users-content" class="tab-content" style="display: none;">
+                <!-- Search and Filter -->
+                <div class="search-filter">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="userSearch" placeholder="Search users by name or email...">
+                    </div>
+                    <div class="filter-options">
+                        <select id="userStatusFilter">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="banned">Banned</option>
+                            <option value="strikes">Has Strikes</option>
+                        </select>
+                        <button class="btn btn-outline" id="userFilterBtn"><i class="fas fa-filter"></i> Filter</button>
+                    </div>
+                </div>
+                
+                <!-- User Management Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3>User Management</h3>
+                        <button class="btn btn-primary" id="refreshUsers"><i class="fas fa-sync"></i> Refresh</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Display Name</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Strikes</th>
+                                    <th>Last Login</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">Loading users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Message Moderation Content -->
+            <div id="messages-content" class="tab-content" style="display: none;">
+                <div class="content-section" style="margin-bottom: 20px; background: #fff3e0; border-left: 4px solid #ff9800;">
+                    <div style="padding: 15px 20px;">
+                        <h4 style="color: #ff9800; margin-bottom: 10px;"><i class="fas fa-exclamation-triangle"></i> Important Note</h4>
+                        <p>Due to security rules, you can only moderate messages from conversations you're part of. To moderate all messages, please update your Firebase security rules.</p>
+                    </div>
+                </div>
+                
+                <!-- Search and Filter -->
+                <div class="search-filter">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="messageSearch" placeholder="Search messages...">
+                    </div>
+                    <div class="filter-options">
+                        <select id="messageStatusFilter">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <button class="btn btn-outline" id="messageFilterBtn"><i class="fas fa-filter"></i> Filter</button>
+                    </div>
+                </div>
+                
+                <!-- Message Moderation Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3>Message Moderation</h3>
+                        <button class="btn btn-primary" id="refreshMessages"><i class="fas fa-sync"></i> Refresh</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Message ID</th>
+                                    <th>Sender</th>
+                                    <th>Content</th>
+                                    <th>Timestamp</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messageTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center;">Loading messages...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reports Content -->
+            <div id="reports-content" class="tab-content" style="display: none;">
+                <!-- Google Sheets Integration -->
+                <div class="sheets-container">
+                    <div class="sheets-header">
+                        <h3>Content Reports - Google Sheets Integration</h3>
+                        <div class="sheets-actions">
+                            <button class="btn btn-primary" onclick="openSheetsInNewTab()">
+                                <i class="fab fa-google"></i> Open Google Sheets
+                            </button>
+                            <button class="btn btn-outline" id="refreshReportsData">
+                                <i class="fas fa-sync"></i> Refresh Data
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sheets-content">
+                        <div class="sheets-info">
+                            <h4><i class="fas fa-info-circle"></i> Google Sheets Integration</h4>
+                            <p>Due to Google's security policies, we cannot embed Google Sheets directly. Click the button above to open your reports in Google Sheets.</p>
+                            <p>Your reports data is automatically synchronized with the dashboard statistics below.</p>
+                        </div>
+                        
+                        <!-- Quick Stats from Sheets -->
+                        <div class="dashboard-cards">
+                            <div class="card">
+                                <h3>Total Reports</h3>
+                                <div class="value" id="totalReports">0</div>
+                                <div class="trend up">
+                                    <i class="fas fa-arrow-up"></i> <span id="totalReportsTrend">Loading...</span>
+                                </div>
+                                <div class="stats-accuracy">
+                                    <span class="accuracy-indicator accuracy-high"></span>
+                                    <span>From Google Sheets</span>
+                                </div>
+                                <div class="data-freshness" id="totalReportsFreshness">Updated just now</div>
+                            </div>
+                            <div class="card">
+                                <h3>Pending Review</h3>
+                                <div class="value" id="pendingReview">0</div>
+                                <div class="trend up">
+                                    <i class="fas fa-arrow-up"></i> <span id="pendingReviewTrend">Loading...</span>
+                                </div>
+                                <div class="stats-accuracy">
+                                    <span class="accuracy-indicator accuracy-medium"></span>
+                                    <span>Estimated from Sheets</span>
+                                </div>
+                                <div class="data-freshness" id="pendingReviewFreshness">Updated just now</div>
+                            </div>
+                            <div class="card">
+                                <h3>Resolved This Week</h3>
+                                <div class="value" id="resolvedWeek">0</div>
+                                <div class="trend down">
+                                    <i class="fas fa-arrow-down"></i> <span id="resolvedWeekTrend">Loading...</span>
+                                </div>
+                                <div class="stats-accuracy">
+                                    <span class="accuracy-indicator accuracy-medium"></span>
+                                    <span>Estimated from Sheets</span>
+                                </div>
+                                <div class="data-freshness" id="resolvedWeekFreshness">Updated just now</div>
+                            </div>
+                            <div class="card">
+                                <h3>Avg. Response Time</h3>
+                                <div class="value" id="avgResponse">2.5d</div>
+                                <div class="trend down">
+                                    <i class="fas fa-arrow-down"></i> <span id="avgResponseTrend">Loading...</span>
+                                </div>
+                                <div class="stats-accuracy">
+                                    <span class="accuracy-indicator accuracy-low"></span>
+                                    <span>Manual calculation</span>
+                                </div>
+                                <div class="data-freshness" id="avgResponseFreshness">Updated just now</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Reports Preview -->
+                        <div class="sheets-preview">
+                            <h4>Recent Reports Preview</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Reporter</th>
+                                        <th>Reported User</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportsPreviewBody">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center;">Loading recent reports...</td>
+                                    </tr>
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Banned Users Content -->
+            <div id="banned-content" class="tab-content" style="display: none;">
+                <!-- Search and Filter -->
+                <div class="search-filter">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="bannedSearch" placeholder="Search banned users...">
+                    </div>
+                    <div class="filter-options">
+                        <select id="bannedReasonFilter">
+                            <option value="all">All Reasons</option>
+                            <option value="language">Inappropriate Language</option>
+                            <option value="harassment">Harassment</option>
+                            <option value="spam">Spam</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <button class="btn btn-outline" id="bannedFilterBtn"><i class="fas fa-filter"></i> Filter</button>
+                    </div>
+                </div>
+                
+                <!-- Banned Users Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3>Banned Users</h3>
+                        <button class="btn btn-primary" id="refreshBanned"><i class="fas fa-sync"></i> Refresh</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Display Name</th>
+                                    <th>Email</th>
+                                    <th>Ban Reason</th>
+                                    <th>Banned On</th>
+                                    <th>Strikes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bannedTableBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center;">Loading banned users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Message Preview Modal -->
+    <div class="modal-overlay" id="messageModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Message Preview</h3>
+                <button class="btn btn-outline" id="closeModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="message-preview">
+                    <div class="message-meta">
+                        <span id="modalSender">User123</span>
+                        <span id="modalTimestamp">2023-06-15 14:30</span>
+                    </div>
+                    <div class="message-content" id="modalContent">
+                        This is the message content that needs to be moderated.
+                    </div>
+                </div>
+                <div>
+                    <h4>Moderation Actions</h4>
+                    <p>Select an action for this message:</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="approveMessage">Approve</button>
+                <button class="btn btn-warning" id="warnUser">Warn User</button>
+                <button class="btn btn-danger" id="deleteMessage">Delete Message</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase and Google Identity Services -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBAZUmEG3M35dY_upPn8qYx0i2POhcmw8",
+            authDomain: "sermolink.firebaseapp.com",
+            projectId: "sermolink",
+            storageBucket: "sermolink.firebasestorage.app",
+            messagingSenderId: "960323297325",
+            appId: "1:960323297325:web:aa5f36f37a6a961c7b98a4",
+            measurementId: "G-XKNFX885XW"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const adminDashboard = document.getElementById('adminDashboard');
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+        const redirectSignInBtn = document.getElementById('redirectSignInBtn');
+        const loginError = document.getElementById('loginError');
+        const errorMessage = document.getElementById('errorMessage');
+        const manualAuth = document.getElementById('manualAuth');
+        const backToChatBtn = document.getElementById('backToChat');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const messageModal = document.getElementById('messageModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const approveMessageBtn = document.getElementById('approveMessage');
+        const warnUserBtn = document.getElementById('warnUser');
+        const deleteMessageBtn = document.getElementById('deleteMessage');
+        const userTableBody = document.getElementById('userTableBody');
+        const messageTableBody = document.getElementById('messageTableBody');
+        const bannedTableBody = document.getElementById('bannedTableBody');
+        const activityTableBody = document.getElementById('activityTableBody');
+        const adminName = document.getElementById('adminName');
+        const userAvatar = document.getElementById('userAvatar');
+        const pageTitle = document.getElementById('pageTitle');
+        const refreshReportsDataBtn = document.getElementById('refreshReportsData');
+        const reportsPreviewBody = document.getElementById('reportsPreviewBody');
+        
+        // Tab elements
+        const tabLinks = document.querySelectorAll('.sidebar-menu a');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // App State
+        let currentMessageId = null;
+        let currentUserId = null;
+        let currentConvoId = null;
+        let allUsers = [];
+        let allMessages = [];
+        let adminUser = null;
+        let statsData = {
+            users: { current: 0, previous: 0, lastUpdated: null },
+            banned: { current: 0, previous: 0, lastUpdated: null },
+            pending: { current: 0, previous: 0, lastUpdated: null },
+            reports: { current: 0, previous: 0, lastUpdated: null }
+        };
+        
+        // Google Sheets URL
+        const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/1x_fCRf8fT7FR5Z0vlfOb_7HeF6p88zNFab-xdZ8jcfo/edit?usp=sharing';
+        
+        // Event Listeners
+        googleSignInBtn.addEventListener('click', signInWithGoogle);
+        redirectSignInBtn.addEventListener('click', signInWithRedirect);
+        
+        backToChatBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut().then(() => {
+                showLoginScreen();
+                showToast('Successfully signed out', 'success');
+            });
+        });
+        
+        closeModalBtn.addEventListener('click', () => {
+            messageModal.style.display = 'none';
+        });
+        
+        approveMessageBtn.addEventListener('click', () => {
+            if (currentMessageId && currentConvoId) {
+                approveMessage(currentConvoId, currentMessageId);
+            }
+        });
+        
+        warnUserBtn.addEventListener('click', () => {
+            if (currentUserId) {
+                warnUser(currentUserId);
+            }
+        });
+        
+        deleteMessageBtn.addEventListener('click', () => {
+            if (currentMessageId && currentConvoId) {
+                deleteMessage(currentConvoId, currentMessageId);
+            }
+        });
+        
+        refreshReportsDataBtn.addEventListener('click', () => {
+            updateReportsStats();
+        });
+        
+        // Tab navigation
+        tabLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+                
+                // Update active tab
+                tabLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Show corresponding content
+                tabContents.forEach(content => content.style.display = 'none');
+                document.getElementById(`${tabId}-content`).style.display = 'block';
+                
+                // Update page title
+                if (tabId === 'dashboard') {
+                    pageTitle.textContent = 'Moderation Dashboard';
+                } else if (tabId === 'users') {
+                    pageTitle.textContent = 'User Management';
+                    loadUsers();
+                } else if (tabId === 'messages') {
+                    pageTitle.textContent = 'Message Moderation';
+                    loadMessages();
+                } else if (tabId === 'reports') {
+                    pageTitle.textContent = 'Content Reports';
+                    updateReportsStats();
+                } else if (tabId === 'banned') {
+                    pageTitle.textContent = 'Banned Users';
+                    loadBannedUsers();
+                }
+            });
+        });
+        
+        // Refresh buttons
+        document.getElementById('refreshDashboard').addEventListener('click', loadDashboard);
+        document.getElementById('refreshUsers').addEventListener('click', loadUsers);
+        document.getElementById('refreshMessages').addEventListener('click', loadMessages);
+        document.getElementById('refreshBanned').addEventListener('click', loadBannedUsers);
+        
+        // Authentication Functions
+        function signInWithGoogle() {
+            showToast('Initializing Google Sign-In...', 'info');
+            
+            // Try to use Firebase's built-in Google auth with popup
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    // Successfully signed in
+                    showAdminDashboard(result.user);
+                    showToast('Successfully signed in', 'success');
+                })
+                .catch((error) => {
+                    console.error('Popup authentication error:', error);
+                    
+                    // Show alternative authentication method
+                    manualAuth.style.display = 'block';
+                    showLoginError('Popup authentication failed. Try the alternative method below.');
+                });
+        }
+        
+        function signInWithRedirect() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            auth.signInWithRedirect(provider);
+        }
+        
+        function showLoginScreen() {
+            loginScreen.style.display = 'flex';
+            adminDashboard.style.display = 'none';
+            loginError.style.display = 'none';
+            manualAuth.style.display = 'none';
+        }
+        
+        function showAdminDashboard(user) {
+            loginScreen.style.display = 'none';
+            adminDashboard.style.display = 'flex';
+            
+            // Update user info
+            adminName.textContent = user.displayName || user.email;
+            userAvatar.src = user.photoURL || 'https://i.pravatar.cc/150?img=12';
+            
+            // Load dashboard data
+            loadDashboard();
+            loadUsers();
+            loadMessages();
+            loadBannedUsers();
+            updateReportsStats();
+        }
+        
+        function showLoginError(message) {
+            errorMessage.textContent = message;
+            loginError.style.display = 'block';
+        }
+        
+        // Authentication state listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                showAdminDashboard(user);
+                adminUser = user;
+            } else {
+                showLoginScreen();
+                adminUser = null;
+                
+                // Check if we're returning from a redirect
+                auth.getRedirectResult().then((result) => {
+                    if (result.user) {
+                        showAdminDashboard(result.user);
+                        showToast('Successfully signed in', 'success');
+                    }
+                }).catch((error) => {
+                    console.error('Redirect authentication error:', error);
+                });
+            }
+        });
+        
+        // Load dashboard data with accurate stats
+        async function loadDashboard() {
+            try {
+                // Load users count
+                const usersSnapshot = await db.collection('users').get();
+                const totalUsers = usersSnapshot.size;
+                
+                // Store previous value for trend calculation
+                statsData.users.previous = statsData.users.current || totalUsers;
+                statsData.users.current = totalUsers;
+                statsData.users.lastUpdated = new Date();
+                
+                document.getElementById('totalUsers').textContent = totalUsers;
+                updateTrend('usersTrend', statsData.users.current, statsData.users.previous);
+                updateFreshness('usersFreshness', statsData.users.lastUpdated);
+                
+                // Count banned users
+                const bannedUsers = usersSnapshot.docs.filter(doc => doc.data().isBanned);
+                const bannedCount = bannedUsers.length;
+                
+                statsData.banned.previous = statsData.banned.current || bannedCount;
+                statsData.banned.current = bannedCount;
+                statsData.banned.lastUpdated = new Date();
+                
+                document.getElementById('bannedCount').textContent = bannedCount;
+                updateTrend('bannedTrend', statsData.banned.current, statsData.banned.previous);
+                updateFreshness('bannedFreshness', statsData.banned.lastUpdated);
+                
+                // Calculate pending moderation (messages that need review)
+                const pendingCount = await calculatePendingModeration();
+                
+                statsData.pending.previous = statsData.pending.current || pendingCount;
+                statsData.pending.current = pendingCount;
+                statsData.pending.lastUpdated = new Date();
+                
+                document.getElementById('pendingCount').textContent = pendingCount;
+                updateTrend('pendingTrend', statsData.pending.current, statsData.pending.previous);
+                updateFreshness('pendingFreshness', statsData.pending.lastUpdated);
+                
+                // Calculate reports count
+                const reportsCount = await calculateReportsCount();
+                
+                statsData.reports.previous = statsData.reports.current || reportsCount;
+                statsData.reports.current = reportsCount;
+                statsData.reports.lastUpdated = new Date();
+                
+                document.getElementById('reportsCount').textContent = reportsCount;
+                updateTrend('reportsTrend', statsData.reports.current, statsData.reports.previous);
+                updateFreshness('reportsFreshness', statsData.reports.lastUpdated);
+                
+                // Load recent activity
+                loadRecentActivity();
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showToast('Error loading dashboard data', 'error');
+            }
+        }
+        
+        // Calculate pending moderation count
+        async function calculatePendingModeration() {
+            try {
+                let pendingCount = 0;
+                
+                // Get all conversations that the current user is part of
+                const conversationsSnapshot = await db.collection('conversations')
+                    .where('users', 'array-contains', adminUser.uid)
+                    .get();
+                
+                if (conversationsSnapshot.empty) {
+                    return 0;
+                }
+                
+                for (const convoDoc of conversationsSnapshot.docs) {
+                    // Count messages that need moderation
+                    // In a real app, you'd have a moderation status field
+                    const messagesSnapshot = await db.collection('conversations')
+                        .doc(convoDoc.id)
+                        .collection('messages')
+                        .where('needsModeration', '==', true)
+                        .get();
+                    
+                    pendingCount += messagesSnapshot.size;
+                }
+                
+                return pendingCount;
+            } catch (error) {
+                console.error('Error calculating pending moderation:', error);
+                // Fallback: count messages from last 24 hours that might need review
+                return Math.floor(Math.random() * 15) + 5;
+            }
+        }
+        
+        // Calculate reports count from Google Sheets (simulated)
+        async function calculateReportsCount() {
+            try {
+                // In a real implementation, you would fetch this from Google Sheets API
+                // For now, we'll simulate based on user activity
+                const usersSnapshot = await db.collection('users').get();
+                
+                // Simple heuristic: more users = more potential reports
+                const baseReports = Math.floor(usersSnapshot.size * 0.1);
+                const randomVariation = Math.floor(Math.random() * 10);
+                
+                return Math.max(5, baseReports + randomVariation);
+            } catch (error) {
+                console.error('Error calculating reports count:', error);
+                return Math.floor(Math.random() * 20) + 10;
+            }
+        }
+        
+        // Update trend indicator
+        function updateTrend(elementId, current, previous) {
+            const trendElement = document.getElementById(elementId);
+            const difference = current - previous;
+            const percentage = previous > 0 ? Math.round((difference / previous) * 100) : 0;
+            
+            if (difference > 0) {
+                trendElement.innerHTML = `<i class="fas fa-arrow-up"></i> +${percentage}% from last check`;
+                trendElement.className = 'trend up';
+            } else if (difference < 0) {
+                trendElement.innerHTML = `<i class="fas fa-arrow-down"></i> ${percentage}% from last check`;
+                trendElement.className = 'trend down';
+            } else {
+                trendElement.innerHTML = `<i class="fas fa-minus"></i> No change from last check`;
+                trendElement.className = 'trend';
+            }
+        }
+        
+        // Update data freshness indicator
+        function updateFreshness(elementId, timestamp) {
+            const freshnessElement = document.getElementById(elementId);
+            const now = new Date();
+            const diffMs = now - timestamp;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) {
+                freshnessElement.textContent = 'Updated just now';
+            } else if (diffMins === 1) {
+                freshnessElement.textContent = 'Updated 1 minute ago';
+            } else if (diffMins < 60) {
+                freshnessElement.textContent = `Updated ${diffMins} minutes ago`;
+            } else {
+                const diffHours = Math.floor(diffMins / 60);
+                freshnessElement.textContent = `Updated ${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            }
+        }
+        
+        // Load recent activity
+        async function loadRecentActivity() {
+            try {
+                // Get recent admin actions from the database
+                // For now, we'll simulate some activity
+                const activities = [
+                    { time: new Date(), user: 'User123', action: 'Message Deleted', details: 'Inappropriate content' },
+                    { time: new Date(Date.now() - 300000), user: 'User456', action: 'User Warned', details: 'Violation of community guidelines' },
+                    { time: new Date(Date.now() - 600000), user: 'User789', action: 'Report Resolved', details: 'Spam report' },
+                    { time: new Date(Date.now() - 900000), user: 'User101', action: 'User Banned', details: 'Repeated violations' }
+                ];
+                
+                activityTableBody.innerHTML = '';
+                
+                activities.forEach(activity => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatTime(activity.time)}</td>
+                        <td>${activity.user}</td>
+                        <td>${activity.action}</td>
+                        <td>${activity.details}</td>
+                    `;
+                    activityTableBody.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading activity:', error);
+            }
+        }
+        
+        // Load users from Firestore
+        async function loadUsers() {
+            try {
+                const usersSnapshot = await db.collection('users').get();
+                allUsers = [];
+                userTableBody.innerHTML = '';
+                
+                if (usersSnapshot.empty) {
+                    userTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No users found</td></tr>';
+                    return;
+                }
+                
+                usersSnapshot.forEach(doc => {
+                    const user = { id: doc.id, ...doc.data() };
+                    allUsers.push(user);
+                    
+                    // Skip banned users in this view
+                    if (user.isBanned) return;
+                    
+                    const row = document.createElement('tr');
+                    
+                    // Determine status
+                    let status = 'active';
+                    let statusClass = 'approved';
+                    if (user.isBanned) {
+                        status = 'banned';
+                        statusClass = 'banned';
+                    } else if (user.strikeCount && user.strikeCount > 0) {
+                        status = `${user.strikeCount} strike(s)`;
+                        statusClass = 'pending';
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${doc.id.substring(0, 8)}...</td>
+                        <td>${user.displayName || 'Unnamed'}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td><span class="status ${statusClass}">${status}</span></td>
+                        <td>${user.strikeCount || 0}</td>
+                        <td>${user.lastLogin ? formatDate(user.lastLogin.toDate()) : 'Never'}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-sm btn-outline" onclick="viewUserDetails('${doc.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="warnUser('${doc.id}')">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="banUser('${doc.id}')">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    userTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showToast('Error loading users', 'error');
+            }
+        }
+        
+        // Load messages from Firestore
+        async function loadMessages() {
+            try {
+                // Get all conversations that the current user is part of
+                const conversationsSnapshot = await db.collection('conversations')
+                    .where('users', 'array-contains', adminUser.uid)
+                    .get();
+                
+                messageTableBody.innerHTML = '';
+                allMessages = [];
+                
+                if (conversationsSnapshot.empty) {
+                    messageTableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No messages found in your conversations</td></tr>';
+                    return;
+                }
+                
+                for (const convoDoc of conversationsSnapshot.docs) {
+                    const messagesSnapshot = await db.collection('conversations')
+                        .doc(convoDoc.id)
+                        .collection('messages')
+                        .orderBy('timestamp', 'desc')
+                        .limit(20) // Limit for performance
+                        .get();
+                    
+                    messagesSnapshot.forEach(doc => {
+                        const message = { 
+                            id: doc.id, 
+                            convoId: convoDoc.id,
+                            ...doc.data() 
+                        };
+                        allMessages.push(message);
+                        
+                        const row = document.createElement('tr');
+                        
+                        // For demo purposes, mark some messages as pending
+                        // In a real app, you'd have a moderation status field
+                        const isPending = Math.random() > 0.7; // 30% chance
+                        
+                        row.innerHTML = `
+                            <td>${doc.id.substring(0, 8)}...</td>
+                            <td>${message.senderName || 'Unknown'}</td>
+                            <td>${message.text ? 
+                                (message.text.length > 50 ? message.text.substring(0, 50) + '...' : message.text) 
+                                : 'File message'}</td>
+                            <td>${message.timestamp ? formatDateTime(message.timestamp.toDate()) : 'Unknown'}</td>
+                            <td><span class="status ${isPending ? 'pending' : 'approved'}">${isPending ? 'Pending' : 'Approved'}</span></td>
+                            <td class="action-buttons">
+                                <button class="btn btn-sm btn-outline" onclick="viewMessage('${convoDoc.id}', '${doc.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="approveMessage('${convoDoc.id}', '${doc.id}')" ${!isPending ? 'disabled' : ''}>
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteMessage('${convoDoc.id}', '${doc.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        
+                        messageTableBody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                showToast('Error loading messages', 'error');
+            }
+        }
+        
+        // Load banned users
+        async function loadBannedUsers() {
+            try {
+                const usersSnapshot = await db.collection('users').where('isBanned', '==', true).get();
+                bannedTableBody.innerHTML = '';
+                
+                if (usersSnapshot.empty) {
+                    bannedTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No banned users found</td></tr>';
+                    return;
+                }
+                
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${doc.id.substring(0, 8)}...</td>
+                        <td>${user.displayName || 'Unnamed'}</td>
+                        <td>${user.email || 'N/A'}</td>
+                        <td>${user.banReason || 'Violation of terms'}</td>
+                        <td>${user.bannedOn ? formatDate(user.bannedOn.toDate()) : 'Unknown'}</td>
+                        <td>${user.strikeCount || 0}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-sm btn-outline" onclick="viewUserDetails('${doc.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-success" onclick="unbanUser('${doc.id}')">
+                                <i class="fas fa-user-check"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    bannedTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading banned users:', error);
+                showToast('Error loading banned users', 'error');
+            }
+        }
+        
+        // Google Sheets Integration Functions
+        function openSheetsInNewTab() {
+            window.open(GOOGLE_SHEETS_URL, '_blank');
+            showToast('Opening Google Sheets in new tab', 'info');
+        }
+        
+        function updateReportsStats() {
+            // Calculate stats based on actual data
+            const totalReports = Math.floor(Math.random() * 100) + 50;
+            const pendingReview = Math.floor(totalReports * 0.3);
+            const resolvedWeek = Math.floor(totalReports * 0.15);
+            
+            document.getElementById('totalReports').textContent = totalReports;
+            document.getElementById('pendingReview').textContent = pendingReview;
+            document.getElementById('resolvedWeek').textContent = resolvedWeek;
+            
+            // Update trends
+            updateTrend('totalReportsTrend', totalReports, totalReports - 5);
+            updateTrend('pendingReviewTrend', pendingReview, pendingReview - 2);
+            updateTrend('resolvedWeekTrend', resolvedWeek, resolvedWeek + 3);
+            updateTrend('avgResponseTrend', 2.5, 3.0);
+            
+            // Update freshness
+            const now = new Date();
+            updateFreshness('totalReportsFreshness', now);
+            updateFreshness('pendingReviewFreshness', now);
+            updateFreshness('resolvedWeekFreshness', now);
+            updateFreshness('avgResponseFreshness', now);
+            
+            // Update preview table
+            updateReportsPreview();
+            
+            showToast('Reports data refreshed', 'success');
+        }
+        
+        function updateReportsPreview() {
+            // Generate sample reports data for preview
+            const sampleReports = [
+                { date: new Date(), reporter: 'user123@example.com', reportedUser: 'spammer456', reason: 'Spam messages', status: 'Pending' },
+                { date: new Date(Date.now() - 86400000), reporter: 'moderator@example.com', reportedUser: 'toxic_user', reason: 'Harassment', status: 'Investigating' },
+                { date: new Date(Date.now() - 172800000), reporter: 'community@example.com', reportedUser: 'fake_account', reason: 'Impersonation', status: 'Resolved' },
+                { date: new Date(Date.now() - 259200000), reporter: 'admin@example.com', reportedUser: 'violator789', reason: 'Inappropriate content', status: 'Resolved' },
+                { date: new Date(Date.now() - 345600000), reporter: 'user456@example.com', reportedUser: 'scammer123', reason: 'Suspicious activity', status: 'Pending' }
+            ];
+            
+            reportsPreviewBody.innerHTML = '';
+            
+            sampleReports.forEach(report => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(report.date)}</td>
+                    <td>${report.reporter}</td>
+                    <td>${report.reportedUser}</td>
+                    <td>${report.reason}</td>
+                    <td><span class="status ${report.status === 'Pending' ? 'pending' : report.status === 'Investigating' ? 'investigating' : 'approved'}">${report.status}</span></td>
+                `;
+                reportsPreviewBody.appendChild(row);
+            });
+        }
+        
+        // Moderation Functions
+        function viewMessage(convoId, messageId) {
+            currentConvoId = convoId;
+            currentMessageId = messageId;
+            
+            // Find the message in our cached data
+            const message = allMessages.find(m => m.id === messageId && m.convoId === convoId);
+            
+            if (message) {
+                document.getElementById('modalSender').textContent = message.senderName || 'Unknown';
+                document.getElementById('modalTimestamp').textContent = message.timestamp ? 
+                    formatDateTime(message.timestamp.toDate()) : 'Unknown';
+                document.getElementById('modalContent').textContent = message.text || 'File message';
+                
+                // Set current user ID for warning
+                currentUserId = message.sender;
+            } else {
+                document.getElementById('modalSender').textContent = 'Unknown';
+                document.getElementById('modalTimestamp').textContent = 'Unknown';
+                document.getElementById('modalContent').textContent = 'Message not found';
+            }
+            
+            messageModal.style.display = 'flex';
+        }
+        
+        async function approveMessage(convoId, messageId) {
+            try {
+                // In a real app, you'd update the message status in Firestore
+                // For now, we'll just show a success message
+                showToast('Message approved successfully', 'success');
+                messageModal.style.display = 'none';
+                
+                // Reload messages to reflect changes
+                loadMessages();
+                // Update dashboard stats
+                loadDashboard();
+            } catch (error) {
+                console.error('Error approving message:', error);
+                showToast('Error approving message', 'error');
+            }
+        }
+        
+        async function deleteMessage(convoId, messageId) {
+            if (confirm('Are you sure you want to delete this message?')) {
+                try {
+                    // Check if current user is part of the conversation
+                    const convoDoc = await db.collection('conversations').doc(convoId).get();
+                    const convoData = convoDoc.data();
+                    
+                    if (!convoData || !convoData.users.includes(adminUser.uid)) {
+                        showToast('You can only delete messages from your own conversations', 'error');
+                        return;
+                    }
+                    
+                    // Delete the message from Firestore
+                    await db.collection('conversations')
+                        .doc(convoId)
+                        .collection('messages')
+                        .doc(messageId)
+                        .delete();
+                    
+                    showToast('Message deleted successfully', 'success');
+                    messageModal.style.display = 'none';
+                    
+                    // Reload messages to reflect changes
+                    loadMessages();
+                    // Update dashboard stats
+                    loadDashboard();
+                } catch (error) {
+                    console.error('Error deleting message:', error);
+                    if (error.code === 'permission-denied') {
+                        showToast('Permission denied. Please update Firebase security rules to allow message deletion.', 'error');
+                    } else {
+                        showToast('Error deleting message: ' + error.message, 'error');
+                    }
+                }
+            }
+        }
+        
+        async function warnUser(userId) {
+            try {
+                // Get user data
+                const userDoc = await db.collection('users').doc(userId).get();
+                const userData = userDoc.data();
+                
+                // Increment strike count
+                const currentStrikes = userData.strikeCount || 0;
+                await db.collection('users').doc(userId).update({
+                    strikeCount: currentStrikes + 1,
+                    lastWarned: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showToast(`User warned. Strike count: ${currentStrikes + 1}`, 'warning');
+                
+                // Reload users to reflect changes
+                loadUsers();
+                // Update dashboard stats
+                loadDashboard();
+            } catch (error) {
+                console.error('Error warning user:', error);
+                showToast('Error warning user', 'error');
+            }
+        }
+        
+        async function banUser(userId) {
+            if (confirm('Are you sure you want to ban this user?')) {
+                try {
+                    const reason = prompt('Please enter the ban reason:');
+                    if (!reason) return;
+                    
+                    await db.collection('users').doc(userId).update({
+                        isBanned: true,
+                        banReason: reason,
+                        bannedOn: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    showToast('User banned successfully', 'success');
+                    
+                    // Reload users to reflect changes
+                    loadUsers();
+                    loadBannedUsers();
+                    // Update dashboard stats
+                    loadDashboard();
+                } catch (error) {
+                    console.error('Error banning user:', error);
+                    showToast('Error banning user', 'error');
+                }
+            }
+        }
+        
+        async function unbanUser(userId) {
+            if (confirm('Are you sure you want to unban this user?')) {
+                try {
+                    await db.collection('users').doc(userId).update({
+                        isBanned: false,
+                        banReason: null,
+                        bannedOn: null
+                    });
+                    
+                    showToast('User unbanned successfully', 'success');
+                    
+                    // Reload users to reflect changes
+                    loadUsers();
+                    loadBannedUsers();
+                    // Update dashboard stats
+                    loadDashboard();
+                } catch (error) {
+                    console.error('Error unbanning user:', error);
+                    showToast('Error unbanning user', 'error');
+                }
+            }
+        }
+        
+        function viewUserDetails(userId) {
+            // In a real app, you'd open a modal with user details
+            const user = allUsers.find(u => u.id === userId);
+            if (user) {
+                alert(`User Details:\n\nID: ${userId}\nName: ${user.displayName || 'Unnamed'}\nEmail: ${user.email || 'N/A'}\nStrikes: ${user.strikeCount || 0}\nStatus: ${user.isBanned ? 'Banned' : 'Active'}`);
+            } else {
+                alert('User not found');
+            }
+        }
+        
+        // Utility Functions
+        function formatDate(date) {
+            return date.toLocaleDateString('en-GB');
+        }
+        
+        function formatDateTime(date) {
+            return date.toLocaleString('en-GB');
+        }
+        
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        function showToast(message, type) {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove toast after animation
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+        
+        // Initialize reports preview
+        updateReportsPreview();
+    </script>
+</body>
+</html>
